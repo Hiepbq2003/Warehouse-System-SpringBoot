@@ -1,95 +1,251 @@
 package dao;
 
+import context.DBContext;
 import model.Category;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryDAO {
+public class CategoryDAO extends DBContext implements I_DAO<Category> {
 
-    private Connection conn;
-
-    public CategoryDAO(Connection conn) {
-        this.conn = conn;
-    }
-
-    // Thêm mới category (không set category_id vì là IDENTITY)
-    public boolean addCategory(Category category) {
-        String sql = "INSERT INTO categories (category_name) VALUES (?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, category.getCategoryName());
-            return ps.executeUpdate() > 0;
+    // Kiểm tra category name đã tồn tại chưa
+    public boolean isCategoryNameExist(String categoryName) {
+        String sql = "SELECT 1 FROM category WHERE name = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setString(1, categoryName);
+            resultSet = statement.executeQuery();
+            return resultSet.next();
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            closeResources();
         }
     }
 
-    // Lấy toàn bộ danh sách danh mục
-    public List<Category> getAllCategories() {
-        List<Category> list = new ArrayList<>();
-        String sql = "SELECT category_id, category_name FROM categories ORDER BY category_id";
-        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Category c = new Category();
-                c.setCategoryId(rs.getInt("category_id"));
-                c.setCategoryName(rs.getString("category_name"));
-                list.add(c);
-            }
+    // Thêm category mới
+    public boolean add(Category category) {
+        if (isCategoryNameExist(category.getCategoryName())) {
+            System.out.println("Category name đã tồn tại, không thể thêm.");
+            return false;
+        }
+        String sql = "INSERT INTO category (name, created_at) VALUES (?, ?)";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            statement.setString(1, category.getCategoryName());
+            statement.setTimestamp(2, now);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            closeResources();
         }
-        return list;
     }
 
-    // Lấy category theo ID
+    // Lấy category theo category_id
     public Category getCategoryById(int categoryId) {
-        String sql = "SELECT category_id, category_name FROM categories WHERE category_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, categoryId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new Category(rs.getInt("category_id"), rs.getString("category_name"));
-                }
+        String sql = "SELECT * FROM category WHERE id = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, categoryId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return getFromResultSet(resultSet);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            closeResources();
         }
         return null;
     }
 
-    // Cập nhật category (không update category_id)
-    public boolean updateCategory(int categoryId, Category newCategory) {
-        String sql = "UPDATE categories SET category_name = ? WHERE category_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newCategory.getCategoryName());
-            ps.setInt(2, categoryId);
-            return ps.executeUpdate() > 0;
+    // Cập nhật category
+    @Override
+    public boolean update(Category category) {
+        String sql = "UPDATE category SET name = ? WHERE id = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setString(1, category.getCategoryName());
+            statement.setInt(2, category.getCategoryId());
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            closeResources();
         }
     }
 
-    // Xóa category theo ID
+    // Tìm category theo name
+    public Category findByCategoryName(String categoryName) {
+        String sql = "SELECT * FROM category WHERE name = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setString(1, categoryName);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return getFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Category> findAll() {
+        List<Category> list = new ArrayList<>();
+        String sql = "SELECT * FROM category ORDER BY id";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Category c = getFromResultSet(resultSet);
+                list.add(c);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return list;
+    }
+
+    @Override
+    public boolean delete(Category category) {
+        String sql = "DELETE FROM category WHERE id = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, category.getCategoryId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeResources();
+        }
+    }
+
+    // Xóa category theo ID (convenience method)
     public boolean deleteCategory(int categoryId) {
-        String sql = "DELETE FROM categories WHERE category_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, categoryId);
-            return ps.executeUpdate() > 0;
+        String sql = "DELETE FROM category WHERE id = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, categoryId);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            closeResources();
         }
     }
-    public boolean updateCategory(Category category) throws Exception {
-    String sql = "UPDATE category SET category_name = ? WHERE category_id = ?";
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, category.getCategoryName());
-        ps.setInt(2, category.getCategoryId());
-        return ps.executeUpdate() > 0;
-    }
-}
 
+    @Override
+    public int insert(Category category) {
+        String sql = "INSERT INTO category (name, created_at) VALUES (?, CURRENT_TIMESTAMP)";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, category.getCategoryName());
+            
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                return -1;
+            }
+            
+            resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            } else {
+                return -1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        } finally {
+            closeResources();
+        }
+    }
+
+    @Override
+    public Category getFromResultSet(ResultSet rs) throws SQLException {
+        Category c = new Category();
+        c.setCategoryId(rs.getInt("id"));
+        c.setCategoryName(rs.getString("name"));
+        c.setCreatedAt(rs.getTimestamp("created_at"));
+        return c;
+    }
+
+    @Override
+    public Category findById(Integer id) {
+        String sql = "SELECT * FROM category WHERE id = ?";
+        try {
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return getFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return null;
+    }
+
+    // Lấy tất cả categories - alias for findAll() for backward compatibility
+    public List<Category> getAllCategories() {
+        return findAll();
+    }
+
+    // Update category - alias for update() for backward compatibility
+    public boolean updateCategory(Category category) {
+        return update(category);
+    }
+
+    // Update category by ID - for backward compatibility
+    public boolean updateCategory(int categoryId, Category newCategory) {
+        newCategory.setCategoryId(categoryId);
+        return update(newCategory);
+    }
+
+    // Add category - alias for insert() for backward compatibility
+    public boolean addCategory(Category category) {
+        return insert(category) > 0;
+    }
+
+    // Thêm method closeResources theo CursorRULE
+    public void closeResources() {
+        try {
+            if (resultSet != null && !resultSet.isClosed()) {
+                resultSet.close();
+            }
+            if (statement != null && !statement.isClosed()) {
+                statement.close();
+            }
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

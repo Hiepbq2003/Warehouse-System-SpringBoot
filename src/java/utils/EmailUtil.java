@@ -46,6 +46,7 @@ public class EmailUtil {
             props.put("mail.smtp.host", SMTP_HOST);
             props.put("mail.smtp.port", SMTP_PORT);
             props.put("mail.smtp.ssl.trust", SMTP_HOST);
+            props.put("mail.transport.protocol", "smtp");
             props.put("mail.debug", "false"); // Set to true for detailed debug
 
             // Create session with authentication
@@ -79,7 +80,7 @@ public class EmailUtil {
         } catch (Exception e) {
             System.out.println("Error sending real email: " + e.getMessage());
             e.printStackTrace();
-
+            String error = e.getMessage();
             // Fallback to console output
             System.out.println("=== EMAIL FAILED - FALLBACK TO CONSOLE ===");
             System.out.println("Your OTP code is: " + otp);
@@ -138,7 +139,7 @@ public class EmailUtil {
     public static boolean testEmailConfiguration() {
         try {
             System.out.println("Testing email configuration...");
-            boolean result = sendOTP("test@example.com", "123456", "Test User");
+            boolean result = sendOTP("test@gmail.com", "123456", "Test User");
             System.out.println("Email test result: " + (result ? "SUCCESS" : "FAILED"));
             return result;
         } catch (Exception e) {

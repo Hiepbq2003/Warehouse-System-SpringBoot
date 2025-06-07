@@ -1,22 +1,25 @@
 package dao;
 
 import context.DBContext;
+import dao.I_DAO;
 import model.Setting;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettingDAO  {
+public class SettingDAO extends DBContext implements I_DAO<Setting> {
 
-    // Lấy tất cả setting
     @Override
     public List<Setting> findAll() {
         List<Setting> settings = new ArrayList<>();
         String sql = "SELECT * FROM setting";
         try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 settings.add(getFromResultSet(resultSet));
@@ -24,18 +27,17 @@ public class SettingDAO  {
         } catch (SQLException e) {
             System.out.println("Error getting all settings: " + e.getMessage());
         } finally {
-            closeResources();
+            close();
         }
         return settings;
     }
 
-    // Tìm setting theo id
     @Override
     public Setting findById(Integer id) {
         String sql = "SELECT * FROM setting WHERE id = ?";
         try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -44,92 +46,92 @@ public class SettingDAO  {
         } catch (SQLException e) {
             System.out.println("Error getting setting by ID: " + e.getMessage());
         } finally {
-            closeResources();
+            close();
         }
         return null;
     }
 
-    // Thêm setting mới
     @Override
     public int insert(Setting setting) {
         String sql = "INSERT INTO setting (`key`, `value`) VALUES (?, ?)";
         try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            conn = getConnection();
+            statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, setting.getKey());
             statement.setString(2, setting.getValue());
+
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating setting failed, no rows affected.");
             }
+
             resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
+            } else {
+                throw new SQLException("Creating setting failed, no ID obtained.");
             }
         } catch (SQLException e) {
             System.out.println("Error inserting setting: " + e.getMessage());
+            return -1;
         } finally {
-            closeResources();
+            close();
         }
-        return -1;
     }
 
-    // Cập nhật setting
     @Override
     public boolean update(Setting setting) {
         String sql = "UPDATE setting SET `key` = ?, `value` = ? WHERE id = ?";
         try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
             statement.setString(1, setting.getKey());
             statement.setString(2, setting.getValue());
             statement.setInt(3, setting.getId());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Error updating setting: " + e.getMessage());
+            return false;
         } finally {
-            closeResources();
+            close();
         }
-        return false;
     }
 
-    // Xóa setting
     @Override
     public boolean delete(Setting setting) {
         if (setting == null || setting.getId() == null) {
-            System.out.println("Error deleting setting: Setting or ID is null.");
+            System.out.println("Error deleting setting: Setting object or ID is null.");
             return false;
         }
         String sql = "DELETE FROM setting WHERE id = ?";
         try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
             statement.setInt(1, setting.getId());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("Error deleting setting: " + e.getMessage());
+            return false;
         } finally {
-            closeResources();
+            close();
         }
-        return false;
     }
 
-    // Chuyển ResultSet thành object Setting
     @Override
-    public Setting getFromResultSet(ResultSet rs) throws SQLException {
-        Setting s = new Setting();
-        s.setId(rs.getInt("id"));
-        s.setKey(rs.getString("key"));
-        s.setValue(rs.getString("value"));
-        return s;
+    public Setting getFromResultSet(ResultSet resultSet) throws SQLException {
+        return Setting.builder()
+                .id(resultSet.getInt("id"))
+                .key(resultSet.getString("key"))
+                .value(resultSet.getString("value"))
+                .build();
     }
 
-    // Tìm setting theo key
+    // Additional method to find setting by key
     public Setting findByKey(String key) {
         String sql = "SELECT * FROM setting WHERE `key` = ?";
         try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
+            conn = getConnection();
+            statement = conn.prepareStatement(sql);
             statement.setString(1, key);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -138,37 +140,38 @@ public class SettingDAO  {
         } catch (SQLException e) {
             System.out.println("Error getting setting by key: " + e.getMessage());
         } finally {
-            closeResources();
+            close();
         }
         return null;
     }
 
-    // Lấy giá trị setting theo key
+    // Convenience method to get setting value by key
     public String getValueByKey(String key) {
-        Setting s = findByKey(key);
-        return s != null ? s.getValue() : null;
+        Setting setting = findByKey(key);
+        return setting != null ? setting.getValue() : null;
     }
 
-    // Cập nhật giá trị setting theo key, nếu chưa có thì tạo mới
+    // Convenience method to update setting value by key
     public boolean updateValueByKey(String key, String value) {
-        Setting s = findByKey(key);
-        if (s != null) {
-            s.setValue(value);
-            return update(s);
+        Setting setting = findByKey(key);
+        if (setting != null) {
+            setting.setValue(value);
+            return update(setting);
         } else {
-            Setting newSetting = new Setting();
-            newSetting.setKey(key);
-            newSetting.setValue(value);
+            // If setting doesn't exist, create new one
+            Setting newSetting = Setting.builder()
+                    .key(key)
+                    .value(value)
+                    .build();
             return insert(newSetting) > 0;
         }
     }
 
-    // Test
     public static void main(String[] args) {
-        SettingDAO dao = new SettingDAO();
-        List<Setting> list = dao.findAll();
-        for (Setting s : list) {
-            System.out.println(s);
+        SettingDAO settingDAO = new SettingDAO();
+        List<Setting> settings = settingDAO.findAll();
+        for (Setting setting : settings) {
+            System.out.println(setting);
         }
     }
 }

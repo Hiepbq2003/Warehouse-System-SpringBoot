@@ -1,14 +1,13 @@
 package model;
 
 public class Role {
-    private int roleId;
-    private String roleName;
+    private String roleId;
+    private String roleName; 
 
-    // getter và setter
-    public int getRoleId() {
+    public String getRoleId() {
         return roleId;
     }
-    public void setRoleId(int roleId) {
+    public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
     public String getRoleName() {
@@ -18,32 +17,35 @@ public class Role {
         this.roleName = roleName;
     }
 
-    // fromString map tên role sang đối tượng Role
-    public static Role fromString(String roleName) {
-        if (roleName == null || roleName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Role name không được để trống");
+    public static Role fromString(String roleId) {
+        if (roleId == null || roleId.trim().isEmpty()) {
+            throw new IllegalArgumentException("roleId không được để trống");
         }
 
         Role role = new Role();
-        switch (roleName.trim().toLowerCase()) {
-            case "customer":
-                role.setRoleId(1);
-                role.setRoleName("customer");
-                break;
-            case "staff":
-                role.setRoleId(2);
-                role.setRoleName("staff");
-                break;
-            case "manager":
-                role.setRoleId(3);
-                role.setRoleName("manager");
-                break;
+        switch (roleId.trim().toLowerCase()) {
             case "admin":
-                role.setRoleId(4);
-                role.setRoleName("admin");
+                role.setRoleId("admin");
+                role.setRoleName("Administrator");
+                break;
+            case "warehouse_manager":
+                role.setRoleId("warehouse_manager");
+                role.setRoleName("Warehouse Manager");
+                break;
+            case "purchasing_staff":
+                role.setRoleId("purchasing_staff");
+                role.setRoleName("Purchasing Staff");
+                break;
+            case "warehouse_staff":
+                role.setRoleId("warehouse_staff");
+                role.setRoleName("Warehouse Staff");
+                break;
+            case "sale_staff":
+                role.setRoleId("sale_staff");
+                role.setRoleName("Sale Staff");
                 break;
             default:
-                throw new IllegalArgumentException("Vai trò không hợp lệ: " + roleName);
+                throw new IllegalArgumentException("Vai trò không hợp lệ: " + roleId);
         }
         return role;
     }

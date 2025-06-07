@@ -3,48 +3,32 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/HSF/ClothesWareHouse/web/index.html</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/SettingDAO.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/EditUserServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/DeleteSupplierServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/AddCategoryServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/DashboardServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/RemoveToastController.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/LoginServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/LogoutServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/InactiveUserServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/ManageProduct.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/EditSupplierServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/EditCategoryServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/DeleteCategoryServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/AddUserServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/CategoryServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/AddSupplierServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/ManageSettingController.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/ForgotPasswordServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/ProfileServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/RegisterServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/ResetPasswordServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/SupplierServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/UserServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/VerifyOTPServlet.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/web/add-stockout.html</file>
-            <file>file:/F:/HSF/ClothesWareHouse/web/discount-code.html</file>
-            <file>file:/F:/HSF/ClothesWareHouse/web/stockin.html</file>
-            <file>file:/F:/HSF/ClothesWareHouse/web/ui-alerts.html</file>
-            <file>file:/F:/HSF/ClothesWareHouse/web/add-stocktake.html</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/dashboard/admin/manageUser/ManageUser.jsp</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/dashboard/admin/ManageUserController.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/UserDAO.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/PasswordUtil.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/model/User.java</file>
             <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/RoleDAO.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/ProductDAO.java</file>
             <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/I_DAO.java</file>
             <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/SupplierDAO.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/UserDAO.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/SettingDAO.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/ProductDAO.java</file>
             <file>file:/F:/HSF/ClothesWareHouse/src/java/dao/CategoryDAO.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/RealEmailSender.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/SessionUtil.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/GlobalUtils.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/dashboard/warehouseStaff/EditCategoryServlet.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/dashboard/admin/DashBoardServlet.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/dashboard/admin/ManageSettingController.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/dashboard/admin/ManageProductController.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/dashboard/admin/product/addProduct.jsp</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/dashboard/admin/product/edit-product.jsp</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/dashboard/admin/product/product.jsp</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/dashboard/admin/category/manageCategory.jsp</file>
             <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/EmailUtil.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/PasswordUtil.java</file>
-            <file>file:/F:/HSF/ClothesWareHouse/src/java/utils/SimpleEmailSender.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/dashboard/admin/dashboard.jsp</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/context/DBContext.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/test/test/TestBuilder.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/src/java/controller/authen/LoginServlet.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/test/test/LoginServletTestManual.java</file>
+            <file>file:/F:/HSF/ClothesWareHouse/web/view/common/sidebar.jsp</file>
         </group>
     </open-files>
 </project-private>
