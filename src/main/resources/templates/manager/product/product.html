@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Quản lý sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css">
+    <link th:href="@{/styles/product.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/styles/sidebar.css}"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bg-dark col-md-2 text-white p-3">
+            <div th:replace="fragments/sidebar :: sidebar"></div>
+        </div>
+
+        <div class="container py-2 col-md-10">
+
+            <div class="alert alert-info alert-dismissible fade show"
+                 role="alert"
+                 th:if="${session.user != null and session.user.role.roleId != 'warehouse_manager'}">
+                Bạn không có quyền truy cập trang này !!!
+            </div>
+
+            <div th:if="${session.user?.role?.roleId == 'warehouse_manager'}">
+
+                <h2 class="mb-4 text-center text-primary fw-bold">Danh sách sản phẩm</h2>
+
+                <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050; width: 100%; max-width: 300px;">
+                    <div th:if="${message}" class="alert alert-success text-start shadow" th:text="${message}"
+                         id="alertMessage"></div>
+                    <div th:if="${error}" class="alert alert-danger text-start shadow" th:text="${error}"
+                         id="alertError"></div>
+                </div>
+
+                <form class="row g-3 align-items-end bg-white p-3 rounded shadow-sm mb-4" method="get"
+                      th:action="@{/manager/manage-product}">
+                    <div class="col-md-6">
+                        <label class="form-label">Tìm kiếm</label>
+                        <input type="text" name="keyword" style="border: 2px solid #000" class="form-control"
+                               placeholder="Tìm mã hoặc tên sản phẩm"
+                               th:value="${searchTerm}"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="active" class="form-select">
+                            <option th:value="true" th:selected="${activeFilter == true}">Đang hoạt động</option>
+                            <option th:value="false" th:selected="${activeFilter == false}">Ngưng hoạt động</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button type="submit" class="btn btn-primary shadow">Lọc sản phẩm</button>
+                    </div>
+                </form>
+
+                <div class="d-flex justify-content-between flex-wrap gap-2 mb-3">
+                    <a class="btn btn-success shadow" th:href="@{/manager/manage-product/create}">
+                        + Thêm sản phẩm
+                    </a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary" th:href="@{/manager/manage-product/export}">⬇ Xuất Excel</a>
+                        <form method="post" th:action="@{/manager/manage-product/import}" enctype="multipart/form-data"
+                              class="d-flex gap-2" style="margin:0;">
+                            <input type="file" name="file" accept=".xlsx" required class="form-control form-control-sm"
+                                   style="width: auto; border: 2px solid #000"/>
+                            <button type="submit" class="btn btn-secondary btn-sm">⬆ Nhập Excel</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bảng dữ liệu -->
+                <div class="table-responsive bg-white shadow-sm rounded">
+                    <table class="table table-bordered table-hover align-middle mb-0 ">
+                        <thead class="table-light text-center">
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã</th>
+                            <th class="text-start ps-3">Tên sản phẩm</th>
+                            <th>Giá mua</th>
+                            <th>Giá bán</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="table-light text-center" th:each="p : ${products}">
+                            <td th:text="${p.productId}">1</td>
+                            <td th:text="${p.productCode}">SP001</td>
+                            <td class="text-start ps-3" th:text="${p.productName}">Áo thun</td>
+                            <td th:text="${p.purchasePrice + ' ₫'}">10000 ₫</td>
+                            <td th:text="${p.salePrice + ' ₫'}">15000 ₫</td>
+                            <td>
+                    <span th:text="${p.isActive} ? '✔ Đang hoạt động' : '✘ Ngưng hoạt động'"
+                          th:classappend="${p.isActive} ? 'text-success' : 'text-danger'"></span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button class="btn btn-warning btn-sm"
+                                            th:attr="data-id=${p.productId}, data-code=${p.productCode}, data-name=${p.productName},
+                                data-description=${p.description}, data-purchase=${p.purchasePrice},
+                                data-sale=${p.salePrice}, data-lowstock=${p.lowStockThreshold},
+                                data-category=${p.category != null ? p.category.id : ''},
+                                data-active=${p.isActive}"
+                                            onclick="openEditModal(this)">Sửa
+                                    </button>
+
+
+                                    <a href="javascript:void(0)"
+                                       class="btn btn-sm btn-danger"
+                                       th:attr="data-id=${p.productId}, data-name=${p.productName}"
+                                       onclick="confirmDelete(this)">Xoá</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${products.size() == 0}">
+                            <td colspan="7" class="text-center fst-italic text-muted">Không có sản phẩm nào.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal sửa sản phẩm -->
+                <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <form th:action="@{/manager/manage-product/edit}" method="post" id="editProductForm">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Sửa sản phẩm</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="productId" id="editProductId"/>
+
+                                    <div class="mb-3">
+                                        <label>Mã sản phẩm</label>
+                                        <input type="text" name="productCode" id="editProductCode" class="form-control"
+                                               required/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Tên sản phẩm</label>
+                                        <input type="text" name="productName" id="editProductName" class="form-control"
+                                               required/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Giá mua</label>
+                                        <input type="number" name="purchasePrice" id="editPurchasePrice"
+                                               class="form-control" required/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Giá bán</label>
+                                        <input type="number" name="salePrice" id="editSalePrice" class="form-control"
+                                               required/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Tồn kho tối thiểu</label>
+                                        <input type="number" name="lowStockThreshold" id="editLowStockThreshold"
+                                               class="form-control"/>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Danh mục</label>
+                                        <select name="category.id" id="editCategoryId" class="form-select" required>
+                                            <option th:each="c : ${categories}" th:value="${c.id}"
+                                                    th:text="${c.name}"></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Trạng thái</label>
+                                        <select name="isActive" id="editIsActive" class="form-select" required>
+                                            <option value="true">Đang hoạt động</option>
+                                            <option value="false">Ngưng hoạt động</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label>Mô tả</label>
+                                        <textarea name="description" id="editDescription" class="form-control"
+                                                  rows="3"></textarea>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                                    <button type="submit" class="btn btn-primary">Lưu</button>
+                                </div>
+                                <input type="hidden" name="page" th:value="${currentPage}"/>
+                                <input type="hidden" name="keyword" th:value="${searchTerm}"/>
+                                <input type="hidden" name="active" th:value="${activeFilter}"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!--modal xóa-->
+                <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title">Xác nhận xoá</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                Bạn có chắc chắn muốn xoá sản phẩm <strong id="productNameToDelete">...</strong> không?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xoá</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Phân trang -->
+                <nav th:if="${totalPages > 1}" class="mt-4" aria-label="Phân trang">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/manager/manage-product(page=${currentPage - 1}, keyword=${searchTerm}, active=${activeFilter})}">Trước</a>
+                        </li>
+                        <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${currentPage == pageNum} ? 'active'">
+                            <a class="page-link"
+                               th:href="@{/manager/manage-product(page=${pageNum}, keyword=${searchTerm}, active=${activeFilter})}"
+                               th:text="${pageNum}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/manager/manage-product(page=${currentPage + 1}, keyword=${searchTerm}, active=${activeFilter})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
+<script>
+    let productIdToDelete = null;
+    let productNameToDelete = "";
+
+    function confirmDelete(button) {
+        productIdToDelete = button.getAttribute('data-id');
+        productNameToDelete = button.getAttribute('data-name');
+        document.getElementById("productNameToDelete").textContent = productNameToDelete;
+        const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+        modal.show();
+    }
+
+    function openEditModal(button) {
+        document.getElementById("editProductId").value = button.getAttribute("data-id");
+        document.getElementById("editProductCode").value = button.getAttribute("data-code");
+        document.getElementById("editProductName").value = button.getAttribute("data-name");
+        document.getElementById("editDescription").value = button.getAttribute("data-description");
+        document.getElementById("editPurchasePrice").value = button.getAttribute("data-purchase");
+        document.getElementById("editSalePrice").value = button.getAttribute("data-sale");
+        document.getElementById("editLowStockThreshold").value = button.getAttribute("data-lowstock");
+        document.getElementById("editCategoryId").value = button.getAttribute("data-category");
+        document.getElementById("editIsActive").value = button.getAttribute("data-active");
+
+        const modal = new bootstrap.Modal(document.getElementById("editProductModal"));
+        modal.show();
+    }
+
+    setTimeout(function () {
+        let success = document.getElementById('alertMessage');
+        let error = document.getElementById('alertError');
+        if (success) success.style.display = 'none';
+        if (error) error.style.display = 'none';
+    }, 3000);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+            if (productIdToDelete) {
+                window.location.href = '/manager/manage-product/delete/' + productIdToDelete;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

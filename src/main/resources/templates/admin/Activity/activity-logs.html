@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhật ký hoạt động - Warehouse Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/styles/sidebar.css}"/>
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bg-dark text-white p-3" style="width: 250px;">
+            <div th:replace="fragments/sidebar :: sidebar"></div>
+        </div>
+
+        <div class="col-md-10 mt-4">
+            <div class="alert alert-info" th:if="${session.user != null and session.user.role.roleId != 'admin'}">
+                Bạn không có quyền truy cập trang này !!!
+            </div>
+            <div th:if="${session.user?.role?.roleId == 'admin'}">
+                <div class="main-content">
+                    <div class="page-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="mb-2"><i class="bi bi-clock-history"></i> Nhật ký hoạt động</h1>
+                            <p class="mb-0">Theo dõi và quản lý tất cả các hoạt động trong hệ thống</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h5 class="card-title mb-4"><i class="bi bi-table"></i> Danh sách nhật ký hoạt động</h5>
+
+                        <form method="get" th:action="@{/admin/Activity/activity-logs}" class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <input type="number" name="userId" class="form-control" placeholder="User ID"
+                                       th:value="${userId}">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="datetime-local" name="start" class="form-control"
+                                       th:value="${start != null ? #temporals.format(start, 'dd/MM/yyyy HH:mm') : ''}"/>
+                            </div>
+
+                            <div class="col-md-3">
+                                <input type="datetime-local" name="end" class="form-control"
+                                       th:value="${end != null ? #temporals.format(end, 'dd/MM/yyyy HH:mm') : ''}"/>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button class="btn btn-primary w-100" type="submit"><i class="bi bi-search"></i> Lọc
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Log Table -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Người dùng</th>
+                                    <th>Hành động</th>
+                                    <th>Đối tượng</th>
+                                    <th>ID đối tượng</th>
+                                    <th>Ghi chú</th>
+                                    <th>Thời gian</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="log : ${logs}">
+                                    <td th:text="${log.id}"></td>
+                                    <td th:text="${log.user.userId}"></td>
+                                    <td>
+                                    <span th:switch="${log.actionType}">
+                                        <span th:case="'CREATE'" class="badge bg-success">Tạo mới</span>
+                                        <span th:case="'UPDATE'" class="badge bg-primary">Cập nhật</span>
+                                        <span th:case="'DELETE'" class="badge bg-danger">Xóa</span>
+                                        <span th:case="'ADJUST'" class="badge bg-warning">Điều chỉnh</span>
+                                        <span th:case="'LOGIN'" class="badge bg-info">Đăng nhập</span>
+                                        <span th:case="'LOGOUT'" class="badge bg-secondary">Đăng xuất</span>
+                                        <span th:case="*" class="badge bg-light text-dark"
+                                              th:text="${log.actionType}"></span>
+                                    </span>
+                                    </td>
+                                    <td th:text="${log.entityType}"></td>
+                                    <td th:text="${log.entityId}"></td>
+                                    <td th:text="${log.note}"></td>
+                                    <td th:text="${#temporals.format(log.timestamp, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav th:if="${totalPages > 1}">
+                            <ul class="pagination justify-content-center mt-3">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=${currentPage - 1}, size=${10}, userId=${userId}, start=${start}, end=${end})}">Trước</a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                                    th:classappend="${i == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=${i}, size=${10}, userId=${userId}, start=${start}, end=${end})}"
+                                       th:text="${i + 1}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=${currentPage + 1}, size=${10}, userId=${userId}, start=${start}, end=${end})}">Sau</a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

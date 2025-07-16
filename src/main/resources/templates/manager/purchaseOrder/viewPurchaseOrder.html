@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn mua hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+    <h2 class="mb-4">Chi tiết đơn mua hàng</h2>
+
+    <!-- Thông tin đơn -->
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <td th:text="${order.id}"></td>
+        </tr>
+        <tr>
+            <th>Mã đơn</th>
+            <td th:text="${order.requestCode}"></td>
+        </tr>
+        <tr>
+            <th>Người tạo (ID)</th>
+            <td th:text="${order.requesterId}"></td>
+        </tr>
+        <tr>
+            <th>Kho (ID)</th>
+            <td th:text="${order.warehouseId}"></td>
+        </tr>
+        <tr>
+            <th>Trạng thái</th>
+            <td><span class="badge bg-info" th:text="${statusMap[order.status.name()]}"></span></td>
+        </tr>
+        <tr>
+            <th>Ghi chú</th>
+            <td th:text="${order.notes ?: 'Không có'}"></td>
+        </tr>
+        <tr>
+            <th>Ngày tạo</th>
+            <td th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '---'}"></td>
+        </tr>
+        <tr>
+            <th>Ngày duyệt</th>
+            <td th:text="${order.approvedAt != null ? #temporals.format(order.approvedAt, 'dd/MM/yyyy HH:mm') : '---'}"></td>
+        </tr>
+    </table>
+
+    <h4 class="mt-5">Chi tiết sản phẩm</h4>
+    <table class="table table-bordered table-hover mt-2">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Mã sản phẩm</th>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng yêu cầu</th>
+            <th>Giá dự kiến</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="detail, stat : ${order.orderDetails}">
+            <td th:text="${stat.count}"></td>
+            <td th:text="${detail.productId}"></td>
+            <td th:text="${detail.product != null ? detail.product.productName : '---'}"></td>
+            <td th:text="${detail.requestedQuantity}"></td>
+            <td th:text="${detail.unitPriceEstimated != null ? #numbers.formatDecimal(detail.unitPriceEstimated, 0, 'COMMA', 2, 'POINT') : '---'}"></td>
+        </tr>
+
+
+        <tr th:if="${#lists.isEmpty(order.orderDetails)}">
+            <td colspan="6" class="text-center">Không có sản phẩm nào trong đơn.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/manager/purchase-orders}" class="btn btn-secondary mt-3">← Quay lại danh sách</a>
+</div>
+</body>
+</html>

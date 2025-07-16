@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Quản Lý Đơn Bán Hàng - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/styles/sidebar.css}"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="bg-dark col-md-2 text-white p-3">
+            <div th:replace="fragments/sidebar :: sidebar"></div>
+        </div>
+        <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <div class="alert alert-info alert-dismissible fade show"
+                 role="alert"
+                 th:if="${session.user != null and session.user.role.roleId != 'sales_staff'}">
+                Bạn không có quyền truy cập trang này !!!
+            </div>
+
+            <div th:if="${session.user?.role?.roleId == 'sales_staff'}">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Quản Lý Đơn Bán Hàng</h3>
+                </div>
+
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="alert alert-info mb-4">
+                    <h6><i class="fas fa-info-circle"></i> Quy trình chuyển trạng thái đơn hàng:</h6>
+                    <small>
+                        <strong>Chờ kiểm tra kho</strong> → Chờ giao hàng, Đã hủy<br/>
+                        <strong>Chờ giao hàng</strong> → Đã giao, Chờ kiểm tra kho, Đã hủy<br/>
+                        <strong>Đã giao</strong> → Hoàn thành, Chờ giao hàng, Đã hủy<br/>
+                        <strong>Hoàn thành</strong> → Đã giao<br/>
+                        <strong>Đã hủy</strong> → Chờ kiểm tra kho
+                    </small>
+                </div>
+
+                <form th:action="@{/saleStaff/salesOrder/salesOrderList}" method="get">
+                    <div class="row align-items-end mb-4">
+                        <div class="col-md-2">
+                            <input type="text" name="customer" class="form-control" placeholder="Tên khách hàng..."
+                                   th:value="${customerFilter}"/>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select name="status" class="form-select">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option value="pending_stock_check" th:selected="${statusFilter == 'pending_stock_check'}">Chờ kiểm tra kho</option>
+                                <option value="awaiting_shipment" th:selected="${statusFilter == 'awaiting_shipment'}">Chờ giao hàng</option>
+                                <option value="shipped" th:selected="${statusFilter == 'shipped'}">Đã giao</option>
+                                <option value="completed" th:selected="${statusFilter == 'completed'}">Hoàn thành</option>
+                                <option value="cancelled" th:selected="${statusFilter == 'cancelled'}">Đã hủy</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                        </div>
+
+                        <div class="col-md-6 text-end">
+                            <a th:href="@{/saleStaff/salesOrder/createSaleOrder}" class="btn btn-success">
+                                <i class="bi bi-plus-circle me-1"></i> Tạo đơn mới
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+
+
+                <div class="table-responsive-lg">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Mã đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Nhân viên tạo</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                            <th>Ghi chú</th>
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order, iterStat : ${orders}">
+                            <td th:text="${(currentPage - 1) * 10 + iterStat.count}"></td>
+                            <td th:text="${order.orderCode}"></td>
+                            <td th:text="${order.customerName}"></td>
+                            <td th:text="${order.createdBy?.fullName ?: 'N/A'}"></td>
+                            <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></td>
+                            <td>
+                            <span class="badge"
+                                  th:classappend="${order.status == 'pending_stock_check'} ? ' bg-warning' :
+                                                  (${order.status == 'awaiting_shipment'} ? ' bg-info' :
+                                                  (${order.status == 'shipped'} ? ' bg-primary' :
+                                                  (${order.status == 'completed'} ? ' bg-success' :
+                                                  (${order.status == 'cancelled'} ? ' bg-danger' : ' bg-secondary'))))"
+                                  th:text="${statusDisplayNames != null and statusDisplayNames.containsKey(order.status) ? statusDisplayNames[order.status] : order.status}">
+                            </span>
+                            </td>
+                            <td th:text="${order.notes ?: 'Không có ghi chú'}"></td>
+                            <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <div class="d-flex flex-column gap-1" style="min-width: 10px;">
+                                    <a th:href="@{/saleStaff/salesOrder/viewSalesOrder(action='view', id=${order.salesOrderId})}"
+                                       class="btn btn-outline-primary btn-sm w-100">Xem</a>
+
+                                    <th:block
+                                            th:if="${order.status.name() != 'completed' and order.status.name() != 'cancelled'}">
+                                        <a th:href="@{/saleStaff/salesOrder/salesOrderList(action='edit', id=${order.salesOrderId})}"
+                                           class="btn btn-info btn-sm w-100">
+                                            Sửa
+                                        </a>
+
+                                        <form th:action="@{/saleStaff/salesOrder/delete}" method="post"
+                                              onsubmit="return confirm('Chắc chắn xóa?')" class="w-100">
+                                            <input type="hidden" name="id" th:value="${order.salesOrderId}"/>
+                                            <button type="submit" class="btn btn-danger btn-sm w-100">Xóa</button>
+                                        </form>
+                                    </th:block>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="9" class="text-center">Không tìm thấy đơn hàng nào.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav th:if="${totalPages > 1}" aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 1} ? ' disabled'">
+                            <a class="page-link"
+                               th:href="@{/saleStaff/salesOrder/salesOrderList(page=${currentPage - 1}, status=${statusFilter}, customer=${customerFilter}, userId=${userIdFilter})}">Trước</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${currentPage == i} ? ' active'">
+                            <a class="page-link"
+                               th:href="@{/saleStaff/salesOrder/salesOrderList(page=${i}, status=${statusFilter}, customer=${customerFilter}, userId=${userIdFilter})}"
+                               th:text="${i}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages} ? ' disabled'">
+                            <a class="page-link"
+                               th:href="@{/saleStaff/salesOrder/salesOrderList(page=${currentPage + 1}, status=${statusFilter}, customer=${customerFilter}, userId=${userIdFilter})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+    </div>
+</div>
+<script>
+    setTimeout(() => {
+        document.getElementById('alertMessage')?.remove();
+        document.getElementById('alertError')?.remove();
+    }, 3000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

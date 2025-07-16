@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Sửa Đơn Bán Hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Sửa Đơn Bán Hàng</h3>
+                <a th:href="@{/saleStaff/salesOrder/salesOrderList}" class="btn btn-secondary">← Quay lại</a>
+            </div>
+
+            <form th:action="@{/saleStaff/salesOrder/update}" method="post"
+                  style="position: relative; padding-bottom: 80px;">
+                <input type="hidden" name="salesOrderId" th:value="${order.salesOrderId}"/>
+
+                <div class="row mb-3">
+                    <!-- Thông tin đơn hàng -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header"><h5>Thông tin đơn hàng</h5></div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label>Mã đơn hàng</label>
+                                    <input type="text" class="form-control" name="orderCode"
+                                           th:value="${order.orderCode}" readonly/>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Tên khách hàng</label>
+                                    <input type="text" class="form-control" name="customerName"
+                                           th:value="${order.customerName}" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Email khách hàng</label>
+                                    <input type="email" class="form-control" name="customerEmail"
+                                           th:value="${order.customerEmail}"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Ngày đặt hàng</label>
+                                    <input type="date" class="form-control" name="orderDate"
+                                           th:value="${#temporals.format(order.orderDate, 'yyyy-MM-dd')}" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Ghi chú</label>
+                                    <textarea class="form-control" name="notes" rows="3"
+                                              th:text="${order.notes}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chọn kho + tìm sản phẩm -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header"><h5>Chọn kho</h5></div>
+                            <div class="card-body">
+                                <label class="form-label">Kho hàng</label>
+                                <select name="selectedWarehouseId" id="selectedWarehouseId" class="form-select"
+                                        required>
+                                    <option value="">-- Chọn kho --</option>
+                                    <option th:each="w : ${warehouses}"
+                                            th:value="${w.warehouseId}"
+                                            th:text="${w.warehouseName}"
+                                            th:selected="${w.warehouseId == selectedWarehouseId}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group mt-3">
+                            <input type="text" id="searchProductInputExternal" class="form-control"
+                                   placeholder="Tìm sản phẩm theo tên"/>
+                            <button class="btn btn-primary" type="button"
+                                    onclick="searchProducts(document.getElementById('searchProductInputExternal').value)">
+                                Lọc
+                            </button>
+                        </div>
+
+                        <div id="productContainer" class="mt-3" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5>Sản phẩm trong đơn hàng</h5>
+                    <table class="table table-bordered" id="orderDetailsTable">
+                        <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Kho</th>
+                            <th>Số lượng</th>
+                            <th>Giá bán</th>
+                            <th>Xóa</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orderDetailsBody">
+                        <tr th:each="detail, iterStat : ${order.orderDetails}">
+                            <td th:text="${detail.product.productName}"></td>
+                            <td>
+                                <select class="form-select"
+                                        name="orderDetails[${iterStat.index}].warehouseId"
+                                        required>
+                                    <option th:each="w : ${warehouses}"
+                                            th:value="${w.warehouseId}"
+                                            th:text="${w.warehouseName}"
+                                            th:selected="${detail.warehouse != null and w.warehouseId == detail.warehouse.warehouseId}">
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" min="1" class="form-control"
+                                       name="orderDetails[${iterStat.index}].quantity"
+                                       th:value="${detail.quantityOrdered}" required/>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(detail.unitSalePrice, 0, 'COMMA', 2, 'POINT')} + ' đ'"></td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeProductRow(this)">
+                                    Xóa
+                                </button>
+                                <input type="hidden" name="orderDetails[${iterStat.index}].productId"
+                                       th:value="${detail.product.productId}"/>
+                                <input type="hidden" name="orderDetails[${iterStat.index}].orderDetailId"
+                                       th:value="${detail.orderDetailId}"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div style="z-index: 1000; position: fixed; bottom: 0; right: 0; left: 500px; background: white; padding: 16px; border-top: 1px solid #ccc;">
+                    <button type="submit" class="btn btn-primary">Cập nhật đơn hàng</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+<script>
+    const warehouseSelect = document.getElementById("selectedWarehouseId");
+    const productContainer = document.getElementById("productContainer");
+    const orderDetailsBody = document.getElementById("orderDetailsBody");
+
+    warehouseSelect.addEventListener("change", () => {
+        const warehouseId = warehouseSelect.value;
+        if (!warehouseId) {
+            productContainer.innerHTML = '';
+            return;
+        }
+        loadPage(1);
+    });
+
+    function loadPage(page, keyword = '') {
+        const warehouseId = warehouseSelect.value;
+        if (!warehouseId) return;
+
+        const url = `/saleStaff/salesOrder/products?warehouseId=${warehouseId}&page=${page}&size=5&keyword=${encodeURIComponent(keyword)}`;
+        fetch(url)
+            .then(res => res.text())
+            .then(html => productContainer.innerHTML = html)
+            .catch(err => {
+                console.error(err);
+                productContainer.innerHTML = '<p class="text-danger">Lỗi khi tải sản phẩm.</p>';
+            });
+    }
+
+    function searchProducts(keyword) {
+        loadPage(1, keyword);
+    }
+
+    function removeProductRow(button) {
+        const row = button.closest('tr');
+        const orderDetailIdInput = row.querySelector("input[name$='.orderDetailId']");
+        const isOldRow = orderDetailIdInput && orderDetailIdInput.value !== "0";
+
+        if (isOldRow) {
+            const deleteInput = document.createElement("input");
+            deleteInput.type = "hidden";
+            deleteInput.name = "deletedOrderDetailIds";
+            deleteInput.value = orderDetailIdInput.value;
+            row.closest("form").appendChild(deleteInput);
+        }
+
+        row.remove();
+        updateIndex();
+    }
+
+    function updateIndex() {
+        const rows = orderDetailsBody.querySelectorAll("tr");
+        rows.forEach((row, index) => {
+            row.querySelectorAll("input, select").forEach(input => {
+                const oldName = input.getAttribute("name");
+                if (oldName) {
+                    const newName = oldName.replace(/\[\d+\]/g, `[${index}]`);
+                    input.setAttribute("name", newName);
+                }
+            });
+        });
+    }
+
+    function addProductToOrder(productId, productName, unitPrice, warehouseId, warehouseName) {
+        const rows = orderDetailsBody.querySelectorAll("tr");
+        let found = false;
+
+        rows.forEach(row => {
+            const pidInput = row.querySelector("input[name$='.productId']");
+            const widInput = row.querySelector("select[name$='.warehouseId']");
+            if (pidInput && widInput && pidInput.value == productId && widInput.value == warehouseId) {
+                const qtyInput = row.querySelector("input[name$='.quantity']");
+                qtyInput.value = parseInt(qtyInput.value) + 1;
+                found = true;
+            }
+        });
+
+        if (found) return;
+
+        const index = rows.length;
+
+        const warehouseOptions = Array.from(document.querySelectorAll("#selectedWarehouseId option"))
+            .map(opt => `<option value="${opt.value}" ${opt.value == warehouseId ? 'selected' : ''}>${opt.text}</option>`)
+            .join('');
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>
+                ${productName}
+                <input type="hidden" name="orderDetails[${index}].productId" value="${productId}" />
+            </td>
+            <td>
+                <select class="form-select" name="orderDetails[${index}].warehouseId" required>
+                    ${warehouseOptions}
+                </select>
+            </td>
+            <td>
+                <input type="number" min="1" class="form-control" name="orderDetails[${index}].quantity" value="1" required />
+            </td>
+            <td>${Number(unitPrice).toLocaleString()} đ</td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeProductRow(this)">Xóa</button>
+                <input type="hidden" name="orderDetails[${index}].orderDetailId" value="0" />
+            </td>
+        `;
+        orderDetailsBody.appendChild(row);
+        updateIndex(); // Cập nhật lại name
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Danh sách Phiếu Yêu Cầu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css"/>
+    <link rel="stylesheet" th:href="@{/styles/sidebar.css}"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-auto bg-dark text-white p-3" style="min-height: 100vh;">
+            <div th:replace="fragments/sidebar :: sidebar"></div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col ps-4">
+            <h2 class="my-4">Danh sách Phiếu Yêu Cầu Mua Hàng</h2>
+
+            <!-- Thông báo -->
+            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Form lọc -->
+            <form class="row g-2 mb-3" method="get" th:action="@{/purchaseStaff/purchaseOrder}">
+                <div class="col-md-2">
+                    <input type="text" name="requesterId" class="form-control" placeholder="Người yêu cầu"
+                           th:value="${requesterId != null ? requesterId : ''}">
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option th:each="s : ${statusList}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${s == status}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="date" name="fromDate" class="form-control"
+                           th:value="${fromDate != null ? fromDate : ''}">
+                </div>
+
+                <div class="col-md-2">
+                    <input type="date" name="toDate" class="form-control"
+                           th:value="${toDate != null ? toDate : ''}">
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                </div>
+            </form>
+
+            <!-- Bảng dữ liệu -->
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                <tr>
+                    <th>STT</th>
+                    <th>Mã phiếu</th>
+                    <th>Người yêu cầu</th>
+                    <th>Kho</th>
+                    <th>Ngày yêu cầu</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order, iStat : ${orders.content}">
+                    <td th:text="${iStat.index + 1 + (orders.number * orders.size)}"></td>
+                    <td th:text="${order.requestCode}"></td>
+                    <td th:text="${order.requesterId}"></td>
+                    <td th:text="${order.warehouseId}"></td>
+                    <td th:text="${#temporals.format(order.requestDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${statusDisplayNames[order.status.name()]}"></td>
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/purchaseStaff/purchaseOrder/form(id=${order.id})}">Điều chỉnh</a>
+                    </td>
+                </tr>
+                <tr th:if="${orders.totalElements == 0}">
+                    <td colspan="7" class="text-center text-muted">Không có dữ liệu</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Phân trang -->
+            <nav th:if="${orders.totalPages > 1}">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/purchaseStaff/purchaseOrder(page=0,
+                                    requesterId=${requesterId},
+                                    status=${status}, fromDate=${fromDate}, toDate=${toDate})}">&laquo;</a>
+                    </li>
+
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
+                        th:classappend="${i == orders.number} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/purchaseStaff/purchaseOrder(page=${i},
+                                    requesterId=${requesterId},
+                                    status=${status}, fromDate=${fromDate}, toDate=${toDate})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/purchaseStaff/purchaseOrder(page=${orders.totalPages - 1},
+                                    requesterId=${requesterId},
+                                    status=${status}, fromDate=${fromDate}, toDate=${toDate})}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
+</body>
+</html>

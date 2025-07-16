@@ -1,0 +1,91 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 20px;
+    color: #333;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #444;
+}
+
+form {
+    margin-bottom: 15px;
+}
+
+input[type="text"] {
+    padding: 6px 10px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 6px 12px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+div span a {
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    margin-right: 5px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+div span a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+div span a[style*="font-weight: bold"] {
+    background-color: #0056b3;
+    color: white;
+    cursor: default;
+}
+
+div {
+    margin-top: 20px;
+}
+

@@ -1,0 +1,118 @@
+body {
+    background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.sidebar {
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 220px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar .user-section {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #080809;
+}
+
+.sidebar .user-avatar-icon {
+    font-size: 50px;
+    color: #0d6efd;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.sidebar .user-avatar-icon:hover {
+    color: #0a58ca;
+}
+
+.sidebar .user-name {
+    color: white;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.sidebar .dropdown-menu-user {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #343a40;
+    border: 1px solid #0d6efd;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    width: 180px;
+    display: none;
+    flex-direction: column;
+    z-index: 1100;
+}
+
+.sidebar .dropdown-menu-user .dropdown-item {
+    color: #ced4da;
+    padding: 10px 15px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar .dropdown-menu-user .dropdown-item:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.sidebar .dropdown-divider {
+    border-top: 1px solid #495057;
+    margin: 5px 0;
+}
+
+.sidebar ul#sidebarnav {
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar ul#sidebarnav li {
+    border-top: 1px solid #495057;
+}
+
+.sidebar ul#sidebarnav li:first-child {
+    border-top: none;
+}
+
+.sidebar ul#sidebarnav li a.nav-link {
+    position: relative;
+    display: block;
+    color: white;
+    padding: 12px 20px 12px 24px;
+    text-decoration: none;
+    height: 48px;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar ul#sidebarnav li a.nav-link i {
+    position: absolute;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+    font-size: 1.3rem;
+}
+
+.sidebar ul#sidebarnav li a .link-text {
+    margin-left: 60px;
+    white-space: nowrap;
+}
+
+.sidebar ul#sidebarnav li a.nav-link:hover,
+.sidebar ul#sidebarnav li a.nav-link.active {
+    background-color: #0d6efd;
+    color: white !important;
+    border-left: 4px solid #ffffff;
+}
+
+.sidebar .inactive {
+    color: gray;
+    background-color: #f0f0f0;
+}

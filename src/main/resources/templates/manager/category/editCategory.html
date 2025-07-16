@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Danh Mục</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container my-4">
+
+    <h3>Sửa Danh Mục</h3>
+    <a th:href="@{/manager/manage-category(action=list)}" class="btn btn-secondary mb-3">← Quay lại</a>
+
+    <!-- Thông báo -->
+    <div th:if="${session.toastMessage}">
+        <p th:text="${session.toastMessage}"
+           th:class="'fw-bold ' + (${session.toastType} == 'success' ? 'text-success' : 'text-danger')">
+        </p>
+    </div>
+
+    <!-- Form sửa danh mục -->
+    <form th:action="@{/manager/manage-category}" method="post" id="categoryForm" novalidate>
+        <input type="hidden" name="action" value="edit"/>
+        <input type="hidden" name="id" th:value="${category.id}"/>
+
+        <div class="mb-3">
+            <label for="id" class="form-label">ID</label>
+            <input type="text" class="form-control" id="id" th:value="${category.id}" readonly/>
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name"
+                   th:value="${category.name}" maxlength="45" placeholder="Nhập tên danh mục..." required/>
+            <div class="form-text" id="nameHelp"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="createdAt" class="form-label">Ngày tạo</label>
+            <input type="text" class="form-control" id="createdAt"
+                   th:value="${#temporals.format(category.createdAt, 'dd/MM/yyyy HH:mm:ss')}" readonly/>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a th:href="@{/manager/manage-category(action=list)}" class="btn btn-secondary">Hủy</a>
+            <button type="submit" class="btn btn-primary">Cập nhật danh mục</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Đếm ký tự
+    const nameInput = document.getElementById('name');
+    const nameHelp = document.getElementById('nameHelp');
+    const maxLength = 45;
+
+    function updateCharCount() {
+        const len = nameInput.value.length;
+        nameHelp.textContent = `${len}/${maxLength} ký tự.`;
+        nameHelp.className = len > maxLength ? 'form-text text-danger' : 'form-text';
+    }
+
+    nameInput.addEventListener('input', updateCharCount);
+    document.addEventListener('DOMContentLoaded', updateCharCount);
+
+    // Kiểm tra form
+    document.getElementById('categoryForm').addEventListener('submit', function (e) {
+        const val = nameInput.value.trim();
+        if (!val || val.length > maxLength) {
+            e.preventDefault();
+            alert("Tên danh mục không được để trống và không vượt quá 45 ký tự.");
+        }
+    });
+</script>
+</body>
+</html>
