@@ -85,7 +85,7 @@ public class ManageStockInwardController {
     public String rejectStockInward(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes) {
         StockInward stock = stockInwardService.findById(id).orElse(null);
         if (stock != null) {
-            if (stock.getStatus() == StockInwardStatus.PENDING_CHECK) {
+            if (stock.getStatus() == StockInwardStatus.PENDING_CHECK || stock.getStatus() == StockInwardStatus.DRAFT) {
                 stock.setStatus(StockInwardStatus.CANCELLED);
                 stockInwardService.save(stock);
                 redirectAttributes.addFlashAttribute("success", "Đã từ chối phiếu nhập.");

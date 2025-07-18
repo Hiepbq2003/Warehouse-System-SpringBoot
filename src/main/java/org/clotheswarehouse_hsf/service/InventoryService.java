@@ -33,4 +33,6 @@ public interface InventoryService {
 
     List<Inventory> findByWarehouseIdAndProductName(Integer warehouseId, String productName, int page, int size);
 
+    Optional<Inventory> findByProductIdAndWarehouseId(Integer productId, Integer warehouseId);
+
 }

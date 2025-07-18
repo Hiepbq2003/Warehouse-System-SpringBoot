@@ -7,68 +7,65 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h3 class="mb-4">Kiểm tra phiếu nhập kho</h3>
+    <h3 class="mb-4">🧾 Kiểm tra phiếu nhập kho</h3>
 
+    <div class="row mb-2">
+        <div class="col-md-4"><strong>Mã phiếu:</strong> <span th:text="${stock.inwardCode}">N/A</span></div>
+        <div class="col-md-4"><strong>Nhà cung cấp:</strong> <span th:text="${stock.supplier.supplierName}">N/A</span></div>
+        <div class="col-md-4"><strong>Người tạo:</strong> <span th:text="${stock.user.fullName}">N/A</span></div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-4"><strong>Kho nhập:</strong> <span th:text="${stock.warehouse.warehouseName}">N/A</span></div>
+        <div class="col-md-4"><strong>Đơn mua hàng:</strong> <span th:text="${stock.purchaseOrder.requestCode}">N/A</span></div>
+        <div class="col-md-4"><strong>Thời gian nhập:</strong> <span th:text="${#temporals.format(stock.inwardDate, 'dd/MM/yyyy HH:mm')}">N/A</span></div>
+    </div>
     <div class="mb-3">
-        <label class="form-label fw-bold">Mã phiếu:</label>
-        <span th:text="${stock.inwardCode}"></span>
+        <strong>Ghi chú:</strong> <span th:text="${stock.notes ?: 'Không có'}">Không có</span>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">Nhà cung cấp:</label>
-        <span th:text="${stock.supplier.supplierName}">N/A</span>
-    </div>
+    <hr/>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">Người tạo:</label>
-        <span th:text="${stock.user.fullName}">N/A</span>
-    </div>
+    <!-- Form kiểm hàng -->
+    <form th:action="@{/ware-staff/stock-inward/check}" method="post">
+        <input type="hidden" name="stockInwardId" th:value="${stock.stockInwardId}"/>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">Kho nhập:</label>
-        <span th:text="${stock.warehouse.warehouseName}">N/A</span>
-    </div>
+        <h5 class="mt-4">📦 Danh sách sản phẩm</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-light">
+                <tr>
+                    <th>ID SP</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng nhập</th>
+                    <th>Đơn giá nhập</th>
+                    <th>Số lượng hiện tại</th>
+                    <th>Số lượng sau nhập</th>
+                    <th>Số lượng thực tế</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="detail : ${stock.details}">
+                    <td th:text="${detail.product.productId}">1</td>
+                    <td th:text="${detail.product.productName}">Sản phẩm A</td>
+                    <td th:text="${detail.quantityReceived}">0</td>
+                    <td th:text="${#numbers.formatDecimal(detail.unitPurchasePrice, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td th:text="${inventoryMap[detail.product.productId]?.quantityOnHand ?: 0}">0</td>
+                    <td th:text="${(inventoryMap[detail.product.productId]?.quantityOnHand ?: 0) + detail.quantityReceived}">0</td>
+                    <td>
+                        <input type="number" name="actualQuantities"
+                               th:value="${detail.quantityReceived}" min="0"
+                               class="form-control" required/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">Đơn mua hàng:</label>
-        <span th:text="${stock.purchaseOrder.requestCode}">N/A</span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label fw-bold">Thời gian nhập:</label>
-        <span th:text="${#temporals.format(stock.inwardDate, 'dd/MM/yyyy HH:mm')}">N/A</span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label fw-bold">Ghi chú:</label>
-        <span th:text="${stock.notes}">Không có</span>
-    </div>
-
-    <h5 class="mt-4">Danh sách sản phẩm</h5>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Đơn giá</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="detail : ${stock.details}">
-            <td th:text="${detail.product.productName}">Tên sản phẩm</td>
-            <td th:text="${detail.quantityReceived}">0</td>
-            <td th:text="${#numbers.formatDecimal(detail.unitPurchasePrice, 0, 'COMMA', 2, 'POINT')}">0.00</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <div class="mt-4">
-        <form th:action="@{/manager/stock-inward/approve}" method="post">
-            <input type="hidden" name="id" th:value="${stock.stockInwardId}">
-            <button class="btn btn-success">Duyệt phiếu</button>
-            <a th:href="@{/ware-staff/stock-inward/check-list}" class="btn btn-secondary">Quay lại</a>
-        </form>
-    </div>
+        <div class="d-flex justify-content-between mt-4">
+            <a th:href="@{/ware-staff/stock-inward/check-list}" class="btn btn-secondary">← Quay lại</a>
+            <button class="btn btn-success">✔ Duyệt phiếu</button>
+        </div>
+    </form>
 </div>
 </body>
 </html>

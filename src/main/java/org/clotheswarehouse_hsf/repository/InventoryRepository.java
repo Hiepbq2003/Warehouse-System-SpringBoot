@@ -69,4 +69,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
     int countByWarehouseIdAndProductName(@Param("warehouseId") Integer warehouseId,
                                          @Param("productName") String productName);
 
+    Optional<Inventory> findByProduct_ProductIdAndWarehouse_WarehouseId(Integer productId, Integer warehouseId);
+
 }

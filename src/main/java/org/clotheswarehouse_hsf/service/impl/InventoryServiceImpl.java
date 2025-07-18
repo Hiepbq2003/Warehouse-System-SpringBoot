@@ -94,4 +94,8 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.countByWarehouseIdAndProductName(warehouseId, nameFilter);
     }
 
+    @Override
+    public Optional<Inventory> findByProductIdAndWarehouseId(Integer productId, Integer warehouseId) {
+        return inventoryRepository.findByProduct_ProductIdAndWarehouse_WarehouseId(productId, warehouseId);
+    }
 }
