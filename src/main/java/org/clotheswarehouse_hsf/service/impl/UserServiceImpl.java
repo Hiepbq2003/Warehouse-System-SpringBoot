@@ -183,5 +183,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByRole(Role.fromString("sales_staff"));
 
     }
+    @Override
+    public List<User> getAllPurchasingStaff() {
+        return userRepository.findByRole(Role.fromString("purchasing_staff"));
+    }
 
 }

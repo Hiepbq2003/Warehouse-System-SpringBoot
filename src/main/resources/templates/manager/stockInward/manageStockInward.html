@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Duyệt Phiếu Nhập Kho</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/styles/sidebar.css}"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-auto bg-dark text-white p-3" style="min-height: 100vh;">
+            <div th:replace="fragments/sidebar :: sidebar"></div>
+        </div>
+
+        <!-- Nội dung -->
+        <div class="col ps-4">
+            <h2 class="my-4">Duyệt Phiếu Nhập Kho</h2>
+
+            <!-- Thông báo -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Form lọc -->
+            <form class="row g-3 mb-4" method="get" th:action="@{/manager/stock-inward/list}">
+                <div class="col-md-3">
+                    <label for="userId" class="form-label">Người tạo</label>
+                    <select id="userId" name="userId" class="form-select">
+                        <option value="" th:selected="${param.userId == null}">--Tất cả--</option>
+                        <option th:each="u : ${users}"
+                                th:value="${u.userId}"
+                                th:text="${u.fullName}"
+                                th:selected="${param.userId == u.userId}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="supplierId" class="form-label">Nhà cung cấp</label>
+                    <select id="supplierId" name="supplierId" class="form-select">
+                        <option value="" th:selected="${param.supplierId == null}">--Tất cả--</option>
+                        <option th:each="s : ${suppliers}"
+                                th:value="${s.supplierId}"
+                                th:text="${s.supplierName}"
+                                th:selected="${param.supplierId == s.supplierId}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Trạng thái</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="" th:selected="${param.status == null}">--Tất cả--</option>
+                        <option th:each="st : ${statuses}"
+                                th:value="${st}"
+                                th:text="${st}"
+                                th:selected="${param.status == st}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                </div>
+            </form>
+
+            <!-- Danh sách -->
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Mã Phiếu</th>
+                    <th>Ngày tạo</th>
+                    <th>Người tạo</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="stock : ${stockInwards.content}">
+                    <td th:text="${stock.inwardCode}"></td>
+                    <td th:text="${#temporals.format(stock.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${stock.user?.fullName ?: '---'}"></td>
+                    <td th:text="${stock.supplier?.supplierName ?: '---'}"></td>
+                    <td th:text="${stock.status}"></td>
+                    <td>
+                        <form th:action="@{/manager/stock-inward/approve}" method="post" style="display:inline;">
+                            <input type="hidden" name="id" th:value="${stock.stockInwardId}" />
+                            <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
+                        </form>
+                        <form th:action="@{/manager/stock-inward/reject}" method="post" style="display:inline;">
+                            <input type="hidden" name="id" th:value="${stock.stockInwardId}" />
+                            <button type="submit" class="btn btn-danger btn-sm">Từ chối</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(stockInwards.content)}">
+                    <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <nav th:if="${stockInwards.totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${stockInwards.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/manager/stock-inward/list(
+                    page=${stockInwards.number - 1},
+                    userId=${param.userId},
+                    supplierId=${param.supplierId},
+                    status=${param.status},
+                    inwardCode=${param.inwardCode},
+                    startDate=${param.startDate},
+                    endDate=${param.endDate}
+                )}">Trước</a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, stockInwards.totalPages - 1)}"
+                        th:classappend="${i == stockInwards.number} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/manager/stock-inward/list(
+                    page=${i},
+                    userId=${param.userId},
+                    supplierId=${param.supplierId},
+                    status=${param.status},
+                    inwardCode=${param.inwardCode},
+                    startDate=${param.startDate},
+                    endDate=${param.endDate}
+                )}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${stockInwards.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/manager/stock-inward/list(
+                    page=${stockInwards.number + 1},
+                    userId=${param.userId},
+                    supplierId=${param.supplierId},
+                    status=${param.status},
+                    inwardCode=${param.inwardCode},
+                    startDate=${param.startDate},
+                    endDate=${param.endDate}
+                )}">Tiếp</a>
+                    </li>
+                </ul>
+            </nav>
+
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

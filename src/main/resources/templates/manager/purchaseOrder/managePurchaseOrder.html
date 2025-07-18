@@ -15,11 +15,16 @@
             <div th:replace="fragments/sidebar :: sidebar"></div>
         </div>
 
-        <!-- Nội dung -->
         <div class="col-md-10 p-4">
             <h2 class="mb-4">Danh sách đơn mua hàng</h2>
 
-            <!-- Form lọc -->
+            <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050; width: 100%; max-width: 300px;">
+                <div th:if="${message}" class="alert alert-success text-start shadow" th:text="${message}"
+                     id="alertMessage"></div>
+                <div th:if="${error}" class="alert alert-danger text-start shadow" th:text="${error}"
+                     id="alertError"></div>
+            </div>
+
             <form method="get" th:action="@{/manager/purchase-orders}" class="row g-2 mb-4">
                 <div class="col-md-2">
                     <input type="text" name="requestCode" class="form-control" placeholder="Mã đơn"
@@ -67,39 +72,49 @@
                     <td th:text="${order.requesterId}">101</td>
                     <td th:text="${order.warehouseId}">5</td>
                     <td>
-                    <span class="badge bg-info"
-                     th:text="${statusMap[order.status.name()]}">
-                    </span>
+                        <span class="badge bg-info" th:text="${statusMap[order.status.name()]}"></span>
                     </td>
-
-                    <td th:text="${order.approvedAt != null ? #temporals.format(order.approvedAt, 'dd/MM/yyyy HH:mm') : '---'}">
-                        ---
-                    </td>
-                    <td th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '---'}">
-                        ---
-                    </td>
+                    <td th:text="${order.approvedAt != null ? #temporals.format(order.approvedAt, 'dd/MM/yyyy HH:mm') : '---'}">---</td>
+                    <td th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '---'}">---</td>
                     <td th:text="${order.notes}">Ghi chú đơn hàng</td>
                     <td>
-                        <a th:href="@{'/manager/purchase-orders/' + ${order.id}}"
-                           class="btn btn-sm btn-info mb-1">Xem</a>
+                        <a th:href="@{'/manager/purchase-orders/' + ${order.id}}" class="btn btn-sm btn-info mb-1">Xem</a>
 
                         <form th:action="@{'/manager/purchase-orders/' + ${order.id} + '/approve'}" method="post"
-                              th:if="${order.status.name() == 'pending_approval'}"
-                              style="display: inline-block;">
+                              th:if="${order.status.name() == 'pending_approval'}" style="display: inline-block;">
+                            <input type="hidden" name="requestCode" th:value="${requestCode}" />
+                            <input type="hidden" name="requesterId" th:value="${requesterId}" />
+                            <input type="hidden" name="status" th:value="${status}" />
+                            <input type="hidden" name="page" th:value="${currentPage}" />
                             <button type="submit" class="btn btn-sm btn-success mb-1">Đồng ý</button>
                         </form>
 
                         <form th:action="@{'/manager/purchase-orders/' + ${order.id} + '/reject'}" method="post"
-                              th:if="${order.status.name() == 'pending_approval'}"
-                              style="display: inline-block;">
+                              th:if="${order.status.name() == 'pending_approval'}" style="display: inline-block;">
+                            <input type="hidden" name="requestCode" th:value="${requestCode}" />
+                            <input type="hidden" name="requesterId" th:value="${requesterId}" />
+                            <input type="hidden" name="status" th:value="${status}" />
+                            <input type="hidden" name="page" th:value="${currentPage}" />
                             <button type="submit" class="btn btn-sm btn-danger mb-1">Từ chối</button>
                         </form>
-
                     </td>
-
                 </tr>
                 </tbody>
             </table>
+
+            <nav th:if="${totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/manager/purchase-orders(page=${currentPage - 1}, requestCode=${requestCode}, requesterId=${requesterId}, status=${status})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/manager/purchase-orders(page=${i}, requestCode=${requestCode}, requesterId=${requesterId}, status=${status})}" th:text="${i}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/manager/purchase-orders(page=${currentPage + 1}, requestCode=${requestCode}, requesterId=${requesterId}, status=${status})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

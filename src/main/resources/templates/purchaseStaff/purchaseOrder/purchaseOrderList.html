@@ -10,20 +10,17 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
+
         <div class="col-auto bg-dark text-white p-3" style="min-height: 100vh;">
             <div th:replace="fragments/sidebar :: sidebar"></div>
         </div>
 
-        <!-- Main content -->
         <div class="col ps-4">
             <h2 class="my-4">Danh sách Phiếu Yêu Cầu Mua Hàng</h2>
 
-            <!-- Thông báo -->
             <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-            <!-- Form lọc -->
             <form class="row g-2 mb-3" method="get" th:action="@{/purchaseStaff/purchaseOrder}">
                 <div class="col-md-2">
                     <input type="text" name="requesterId" class="form-control" placeholder="Người yêu cầu"
@@ -41,6 +38,7 @@
                     </select>
                 </div>
 
+
                 <div class="col-md-2">
                     <input type="date" name="fromDate" class="form-control"
                            th:value="${fromDate != null ? fromDate : ''}">
@@ -56,7 +54,6 @@
                 </div>
             </form>
 
-            <!-- Bảng dữ liệu -->
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
                 <tr>
@@ -88,7 +85,6 @@
                 </tbody>
             </table>
 
-            <!-- Phân trang -->
             <nav th:if="${orders.totalPages > 1}">
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${orders.first} ? 'disabled'">

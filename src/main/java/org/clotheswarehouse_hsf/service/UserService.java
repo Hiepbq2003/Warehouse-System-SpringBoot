@@ -39,4 +39,7 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     List<User> getAllSalesStaff();
+
+    List<User> getAllPurchasingStaff();
+
 }

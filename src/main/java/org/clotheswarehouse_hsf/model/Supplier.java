@@ -41,3 +41,4 @@ public class Supplier {
     @Column(name = "updated_at")
     Timestamp updatedAt;
 }
+

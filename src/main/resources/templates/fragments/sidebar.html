@@ -74,6 +74,9 @@
             <a class="nav-link text-white" th:href="@{/manager/purchase-orders}">
                 Đơn mua hàng
             </a>
+            <a class="nav-link text-white" th:href="@{/manager/stock-inward/list}">
+                Đơn Nhập Kho
+            </a>
         </li>
 
         <!-- SALE STAFF -->
@@ -97,8 +100,8 @@
             <a class="nav-link text-white" th:href="@{'/purchaseStaff/purchaseOrder'}">
                 Đơn mua hàng
             </a>
-            <a class="nav-link text-white" th:href="@{/stockin}">
-                Nhập kho
+            <a class="nav-link text-white" th:href="@{'/purchaseStaff/stockInward'}">
+                Tạo Phiếu Nhập kho
             </a>
         </li>
 
@@ -109,8 +112,8 @@
             <a class="nav-link text-white" th:href="@{/wareStaff/salesOrder/list}">
                 Xuất Kho
             </a>
-            <a class="nav-link text-white" th:href="@{/reports/low-stock}">
-                Sắp hết hàng
+            <a class="nav-link text-white" th:href="@{/ware-staff/stock-inward/check-list}">
+                Nhập Kho
             </a>
         </li>
 

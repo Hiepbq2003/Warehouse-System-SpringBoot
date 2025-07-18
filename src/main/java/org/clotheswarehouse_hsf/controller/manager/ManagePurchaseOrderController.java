@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -79,16 +80,41 @@ public class ManagePurchaseOrderController {
     }
 
     @PostMapping("/{id}/approve")
-    public String approveOrder(@PathVariable Integer id) {
+    public String approveOrder(
+            @PathVariable Integer id,
+            @RequestParam(required = false) String requestCode,
+            @RequestParam(required = false) String requesterId,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") int page,
+            RedirectAttributes redirectAttributes
+    ) {
         purchaseOrderService.approve(id);
-        return "redirect:/manager/purchase-orders";
+        redirectAttributes.addFlashAttribute("message", "Duyệt đơn hàng thành công!");
+        return "redirect:/manager/purchase-orders?requestCode=" + (requestCode == null ? "" : requestCode)
+                + "&requesterId=" + (requesterId == null ? "" : requesterId)
+                + "&status=" + (status == null ? "" : status)
+                + "&page=" + page;
     }
 
     @PostMapping("/{id}/reject")
-    public String rejectOrder(@PathVariable Integer id) {
+    public String rejectOrder(
+            @PathVariable Integer id,
+            @RequestParam(required = false) String requestCode,
+            @RequestParam(required = false) String requesterId,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") int page,
+            RedirectAttributes redirectAttributes
+    ) {
         purchaseOrderService.reject(id);
-        return "redirect:/manager/purchase-orders";
+        redirectAttributes.addFlashAttribute("message", "Từ chối đơn hàng thành công!");
+        return "redirect:/manager/purchase-orders?requestCode=" + (requestCode == null ? "" : requestCode)
+                + "&requesterId=" + (requesterId == null ? "" : requesterId)
+                + "&status=" + (status == null ? "" : status)
+                + "&page=" + page;
     }
+
+
+
     @GetMapping("/{id}")
     public String viewPurchaseOrder(@PathVariable Integer id, Model model) {
         PurchaseOrder order = purchaseOrderService.findById(id)

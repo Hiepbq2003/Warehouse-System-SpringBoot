@@ -1,6 +1,8 @@
 package org.clotheswarehouse_hsf.service;
 
 import org.clotheswarehouse_hsf.model.PurchaseOrder;
+import org.clotheswarehouse_hsf.utils.EmailUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PurchaseOrderService {
+
     List<PurchaseOrder> findAll();
 
     Optional<PurchaseOrder> findById(Integer id);
@@ -42,5 +45,6 @@ public interface PurchaseOrderService {
 
     void reject(Integer id);
 
+    void sendOrderEmailToSupplier(PurchaseOrder order);
 
 }

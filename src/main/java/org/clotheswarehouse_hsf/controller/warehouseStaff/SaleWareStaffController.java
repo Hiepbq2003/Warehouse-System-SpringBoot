@@ -20,7 +20,6 @@ public class SaleWareStaffController {
     @Autowired
     private SalesOrderService salesOrderService;
 
-    // Hiển thị danh sách đơn hàng
     @GetMapping("/list")
     public String listOrders(Model model,
                              @RequestParam(defaultValue = "1") int page) {
@@ -31,7 +30,6 @@ public class SaleWareStaffController {
         return "wareStaff/saleOrder/saleOrderList";
     }
 
-    // Hiển thị form sửa đơn
     @GetMapping("/edit/{id}")
     public String editOrder(@PathVariable Integer id, Model model, RedirectAttributes ra) {
         SalesOrder order = salesOrderService.findById(id);
@@ -45,7 +43,6 @@ public class SaleWareStaffController {
         }
         model.addAttribute("order", order);
 
-        // Truyền thêm map hiển thị tên trạng thái (nếu cần)
         Map<SalesOrder.OrderStatus, String> statusDisplayNames = Map.of(
                 SalesOrder.OrderStatus.pending_stock_check, "Chờ kiểm kho",
                 SalesOrder.OrderStatus.awaiting_shipment, "Chờ giao hàng",
