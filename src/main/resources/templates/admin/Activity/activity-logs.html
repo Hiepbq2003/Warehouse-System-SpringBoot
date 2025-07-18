@@ -105,25 +105,59 @@
                             </table>
                         </div>
 
-                        <!-- Pagination -->
                         <nav th:if="${totalPages > 1}">
                             <ul class="pagination justify-content-center mt-3">
+
                                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                                     <a class="page-link"
-                                       th:href="@{/admin/Activity/activity-logs(page=${currentPage - 1}, size=${10}, userId=${userId}, start=${start}, end=${end})}">Trước</a>
+                                       th:href="@{/admin/Activity/activity-logs(page=0, size=${size}, userId=${userId}, start=${start}, end=${end})}">«</a>
                                 </li>
-                                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=${currentPage - 1}, size=${size}, userId=${userId}, start=${start}, end=${end})}">‹</a>
+                                </li>
+
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=0, size=${size}, userId=${userId}, start=${start}, end=${end})}">1</a>
+                                </li>
+
+                                <li class="page-item disabled" th:if="${currentPage > 3}">
+                                    <span class="page-link">...</span>
+                                </li>
+
+                                <li class="page-item"
+                                    th:each="i : ${#numbers.sequence((currentPage - 1 > 1 ? currentPage - 1 : 1), (currentPage + 1 < totalPages - 2 ? currentPage + 1 : totalPages - 2))}"
                                     th:classappend="${i == currentPage} ? 'active'">
                                     <a class="page-link"
-                                       th:href="@{/admin/Activity/activity-logs(page=${i}, size=${10}, userId=${userId}, start=${start}, end=${end})}"
-                                       th:text="${i + 1}">1</a>
+                                       th:href="@{/admin/Activity/activity-logs(page=${i}, size=${size}, userId=${userId}, start=${start}, end=${end})}"
+                                       th:text="${i + 1}"></a>
                                 </li>
+
+                                <li class="page-item disabled" th:if="${currentPage < totalPages - 4}">
+                                    <span class="page-link">...</span>
+                                </li>
+
+                                <li class="page-item" th:if="${totalPages > 1}"
+                                    th:classappend="${currentPage == totalPages - 1} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=${totalPages - 1}, size=${size}, userId=${userId}, start=${start}, end=${end})}"
+                                       th:text="${totalPages}"></a>
+                                </li>
+
                                 <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
                                     <a class="page-link"
-                                       th:href="@{/admin/Activity/activity-logs(page=${currentPage + 1}, size=${10}, userId=${userId}, start=${start}, end=${end})}">Sau</a>
+                                       th:href="@{/admin/Activity/activity-logs(page=${currentPage + 1}, size=${size}, userId=${userId}, start=${start}, end=${end})}">›</a>
+                                </li>
+
+                                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/admin/Activity/activity-logs(page=${totalPages - 1}, size=${size}, userId=${userId}, start=${start}, end=${end})}">»</a>
                                 </li>
                             </ul>
                         </nav>
+
 
                     </div>
                 </div>

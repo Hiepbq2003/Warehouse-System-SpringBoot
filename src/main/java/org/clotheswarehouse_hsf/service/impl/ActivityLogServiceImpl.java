@@ -5,6 +5,7 @@ import org.clotheswarehouse_hsf.model.User;
 import org.clotheswarehouse_hsf.repository.ActivityLogRepository;
 import org.clotheswarehouse_hsf.service.ActivityLogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +21,9 @@ public class ActivityLogServiceImpl implements ActivityLogService {
     private ActivityLogRepository activityLogRepository;
 
     public Page<ActivityLog> filterLogs(Long userId, LocalDateTime start, LocalDateTime end, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
         return activityLogRepository.findByUserAndDate(userId, start, end, pageable);
     }
-
 
     @Override
     public void save(ActivityLog log) {

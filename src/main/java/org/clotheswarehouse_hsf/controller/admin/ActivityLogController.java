@@ -25,18 +25,16 @@ public class ActivityLogController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "20") int size,
             Model model) {
 
         Page<ActivityLog> logs = activityLogService.filterLogs(userId, start, end, page, size);
         model.addAttribute("logs", logs.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", logs.getTotalPages());
-        model.addAttribute("userId", userId);  // đổi tên
+        model.addAttribute("userId", userId);
         model.addAttribute("start", start);
         model.addAttribute("end", end);
         return "admin/Activity/activity-logs";
     }
-
-
 }

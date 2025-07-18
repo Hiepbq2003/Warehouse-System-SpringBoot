@@ -83,15 +83,20 @@
                     <td th:text="${stock.supplier?.supplierName ?: '---'}"></td>
                     <td th:text="${stock.status}"></td>
                     <td>
-                        <form th:action="@{/manager/stock-inward/approve}" method="post" style="display:inline;">
-                            <input type="hidden" name="id" th:value="${stock.stockInwardId}" />
-                            <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
-                        </form>
-                        <form th:action="@{/manager/stock-inward/reject}" method="post" style="display:inline;">
-                            <input type="hidden" name="id" th:value="${stock.stockInwardId}" />
-                            <button type="submit" class="btn btn-danger btn-sm">Từ chối</button>
-                        </form>
+                        <div th:if="${stock.status == T(org.clotheswarehouse_hsf.model.enums.StockInwardStatus).DRAFT or stock.status == T(org.clotheswarehouse_hsf.model.enums.StockInwardStatus).PENDING_CHECK}">
+                            <form th:action="@{/manager/stock-inward/approve}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${stock.stockInwardId}" />
+                                <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
+                            </form>
+                            <form th:action="@{/manager/stock-inward/reject}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${stock.stockInwardId}" />
+                                <button type="submit" class="btn btn-danger btn-sm">Từ chối</button>
+                            </form>
+                        </div>
+                        <span th:if="${stock.status != T(org.clotheswarehouse_hsf.model.enums.StockInwardStatus).DRAFT and stock.status != T(org.clotheswarehouse_hsf.model.enums.StockInwardStatus).PENDING_CHECK}"
+                              class="text-muted fst-italic">Không thể thao tác</span>
                     </td>
+
                 </tr>
                 <tr th:if="${#lists.isEmpty(stockInwards.content)}">
                     <td colspan="6" class="text-center text-muted">Không có dữ liệu</td>
