@@ -98,4 +98,19 @@ public class InventoryServiceImpl implements InventoryService {
     public Optional<Inventory> findByProductIdAndWarehouseId(Integer productId, Integer warehouseId) {
         return inventoryRepository.findByProduct_ProductIdAndWarehouse_WarehouseId(productId, warehouseId);
     }
+
+    @Override
+    public long countOutOfStock() {
+        return inventoryRepository.countOutOfStock();
+    }
+
+    @Override
+    public long countLowStock() {
+        return inventoryRepository.countLowStock();
+    }
+
+    @Override
+    public long getTotalQuantityOnHand() {
+        return inventoryRepository.getTotalQuantityOnHand();
+    }
 }

@@ -83,4 +83,8 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByIsActive(true);
     }
 
+    @Override
+    public long count() {
+        return productRepository.count();
+    }
 }

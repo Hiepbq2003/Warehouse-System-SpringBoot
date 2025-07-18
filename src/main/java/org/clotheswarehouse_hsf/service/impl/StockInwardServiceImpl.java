@@ -109,5 +109,8 @@ public class StockInwardServiceImpl implements StockInwardService {
             return predicates;
         }, pageable);
     }
-
+    @Override
+    public long count() {
+        return stockInwardRepository.count();
+    }
 }

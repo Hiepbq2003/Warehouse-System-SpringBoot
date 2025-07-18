@@ -42,4 +42,5 @@ public interface UserService {
 
     List<User> getAllPurchasingStaff();
 
+    long count();
 }

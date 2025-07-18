@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
+    @Query("SELECT COALESCE(SUM(i.quantityOnHand), 0) FROM Inventory i")
+    long getTotalQuantityOnHand();
+
+    @Query("SELECT COUNT(i) FROM Inventory i WHERE i.quantityOnHand = 0")
+    long countOutOfStock();
+
+    @Query("SELECT COUNT(i) FROM Inventory i WHERE i.quantityOnHand <= i.product.lowStockThreshold AND i.quantityOnHand > 0")
+    long countLowStock();
 
     Optional<Inventory> findByProductAndWarehouse(Product product, Warehouse warehouse);
 

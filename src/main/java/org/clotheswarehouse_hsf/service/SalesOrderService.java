@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface SalesOrderService {
+    long count();
+
     List<SalesOrder> findAll();
 
     SalesOrder findById(Integer id);

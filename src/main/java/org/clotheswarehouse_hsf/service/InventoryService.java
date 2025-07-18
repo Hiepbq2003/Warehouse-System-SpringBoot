@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InventoryService {
+    long getTotalQuantityOnHand();
 
     List<Inventory> findAll();
 
@@ -35,4 +36,6 @@ public interface InventoryService {
 
     Optional<Inventory> findByProductIdAndWarehouseId(Integer productId, Integer warehouseId);
 
+    long countOutOfStock();
+    long countLowStock();
 }

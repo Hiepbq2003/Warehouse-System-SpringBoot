@@ -188,4 +188,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByRole(Role.fromString("purchasing_staff"));
     }
 
+    @Override
+    public long count() {
+        return userRepository.count();
+    }
 }

@@ -25,6 +25,9 @@ import java.util.Map;
 @Service
 public class SalesOrderServiceImpl implements SalesOrderService {
     @Autowired
+    private SalesOrderRepository salesOrderRepository;
+
+    @Autowired
     private InventoryRepository inventoryRepository;
 
     @Autowired
@@ -34,6 +37,11 @@ public class SalesOrderServiceImpl implements SalesOrderService {
     private SalesOrderRepository repository;
 
     private final int PAGE_SIZE = 10;
+
+    @Override
+    public long count() {
+        return salesOrderRepository.count();
+    }
 
     @Override
     public List<SalesOrder> findAll() {

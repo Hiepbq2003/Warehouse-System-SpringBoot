@@ -10,11 +10,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StockInwardService {
+    long count();
+
     List<StockInward> findAll();
+
     Optional<StockInward> findById(Integer id);
+
     StockInward save(StockInward stockInward);
+
     void deleteById(Integer id);
+
     List<StockInward> findByStatus(StockInwardStatus status);
+
     void updateStatus(Integer id, StockInwardStatus status); // thêm
     Page<StockInward> filter(
             StockInwardStatus status,

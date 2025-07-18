@@ -31,4 +31,6 @@ public interface ProductService {
     List<Product> findAll();
 
     boolean existsByProductName(String name);
+
+    long count();
 }
