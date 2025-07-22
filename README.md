@@ -67,3 +67,7 @@ SOURCE /WareHouseDataBase.sql;
 - cd Warehouse-System-SpringBoot
 
 - ./mvnw clean package
+
+To run:
+
+java -jar target/ClothesWareHouse_HSF-0.0.1-SNAPSHOT.jar
