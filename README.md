@@ -60,5 +60,7 @@ SOURCE /WareHouseDataBase.sql;
 🔧 Step 3: Build the Project
 
 git clone https://github.com/Hiepbq2003/Warehouse-System-SpringBoot.git
+
 cd Warehouse-System-SpringBoot
+
 ./mvnw clean package
