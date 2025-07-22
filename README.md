@@ -27,14 +27,13 @@ A web-based Warehouse Management System built with Spring Boot, using Thymeleaf 
 🚀 How to Run This Project:
 
 🧱 Requirements:
-Docker & Docker Compose
+- Docker & Docker Compose
 
-Java 17
+- Java 17
 
-Maven (or ./mvnw)
+- Maven (or ./mvnw)
 
-Git
-
+- Git
 
 🐬 Step 1: Set up MySQL with Docker
 Start MySQL container:
@@ -63,8 +62,8 @@ SOURCE /WareHouseDataBase.sql;
 
 🔧 Step 3: Build the Project
 
-git clone https://github.com/Hiepbq2003/Warehouse-System-SpringBoot.git
+- git clone https://github.com/Hiepbq2003/Warehouse-System-SpringBoot.git
 
-cd Warehouse-System-SpringBoot
+- cd Warehouse-System-SpringBoot
 
-./mvnw clean package
+- ./mvnw clean package
