@@ -70,4 +70,6 @@ SOURCE /WareHouseDataBase.sql;
 
 To run:
 
-java -jar target/ClothesWareHouse_HSF-0.0.1-SNAPSHOT.jar
+- java -jar target/ClothesWareHouse_HSF-0.0.1-SNAPSHOT.jar
+
+- access: http://localhost:8080/login
