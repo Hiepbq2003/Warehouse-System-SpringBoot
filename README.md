@@ -24,10 +24,10 @@ A web-based Warehouse Management System built with Spring Boot, using Thymeleaf 
 - Apache POI (Excel export)
 - Maven
 
-🚀 How to Run This Project
-🧱 Requirements
-Docker & Docker Compose
+🚀 How to Run This Project:
 
+🧱 Requirements:
+Docker & Docker Compose
 Java 17
 Maven (or ./mvnw)
 Git
