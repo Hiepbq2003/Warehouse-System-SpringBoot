@@ -28,9 +28,13 @@ A web-based Warehouse Management System built with Spring Boot, using Thymeleaf 
 
 🧱 Requirements:
 Docker & Docker Compose
+
 Java 17
+
 Maven (or ./mvnw)
+
 Git
+
 
 🐬 Step 1: Set up MySQL with Docker
 Start MySQL container:
