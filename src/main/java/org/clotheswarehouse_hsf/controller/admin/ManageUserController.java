@@ -57,7 +57,7 @@ public class ManageUserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@ModelAttribute("newUser") User user,
+    public String createUser(@ModelAttribute User user,
                              @RequestParam("password") String password,
                              RedirectAttributes ra) throws NoSuchAlgorithmException {
 
@@ -92,4 +92,5 @@ public class ManageUserController {
         ra.addFlashAttribute("message", "Đã vô hiệu hoá tài khoản!");
         return "redirect:/admin/manageUser";
     }
+
 }

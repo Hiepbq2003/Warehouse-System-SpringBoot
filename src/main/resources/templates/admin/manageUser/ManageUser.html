@@ -113,8 +113,8 @@
                                 <td th:text="${u.email}"></td>
                                 <td th:text="${u.role?.roleName ?: 'Chưa gán'}"></td>
                                 <td>
-                <span th:text="${u.active} ? 'Hoạt động' : 'Vô hiệu'"
-                      th:classappend="${u.active} ? 'text-success' : 'text-danger'"></span>
+                                <span th:text="${u.active} ? 'Hoạt động' : 'Vô hiệu'"
+                                 th:classappend="${u.active} ? 'text-success' : 'text-danger'"></span>
                                 </td>
                                 <td th:text="${u.lastLogin != null ? #temporals.format(u.lastLogin, 'dd/MM/yyyy HH:mm') : '---'}"></td>
                                 <td th:text="${#dates.format(u.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
@@ -181,70 +181,77 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
-                </div>
+
                 <!-- Modal: Create -->
-                <div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form class="modal-content" th:action="@{/admin/manageUser/create}" method="post">
 
-                            <!-- Header -->
-                            <div class="modal-header">
-                                <h5 class="modal-title">Tạo người dùng</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Đóng"></button>
-                            </div>
+                        <div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form class="modal-content"
+                                      th:action="@{/admin/manageUser/create}"
+                                      method="post">
 
-                            <!-- Body -->
-                            <div class="modal-body">
-                                <div class="mb-2">
-                                    <label for="username">Tài khoản</label>
-                                    <input id="username" class="form-control" name="username" required/>
-                                    <div class="alert alert-danger" th:if="${param.error == 'username'}">
-                                        ⚠ Tài khoản đã tồn tại.
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Tạo người dùng</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                                     </div>
-                                </div>
 
-                                <div class="mb-2">
-                                    <label for="fullName">Họ tên</label>
-                                    <input id="fullName" class="form-control" name="fullName" required/>
-                                </div>
+                                    <div class="modal-body">
+                                        <!-- Tài khoản -->
+                                        <div class="mb-2">
+                                            <label for="username">Tài khoản</label>
+                                            <input id="username" class="form-control" th:name="username" required/>
+                                            <div class="alert alert-danger mt-1" th:if="${error == 'username'}">
+                                                ⚠ Tài khoản đã tồn tại.
+                                            </div>
+                                        </div>
 
-                                <div class="mb-2">
-                                    <label for="email">Email</label>
-                                    <input id="email" type="email" class="form-control" name="email" required/>
-                                    <div class="alert alert-danger" th:if="${param.error == 'email'}">
-                                        ⚠ Email đã tồn tại.
+                                        <!-- Họ tên -->
+                                        <div class="mb-2">
+                                            <label for="fullName">Họ tên</label>
+                                            <input id="fullName" class="form-control" th:name="fullName" required/>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="mb-2">
+                                            <label for="email">Email</label>
+                                            <input id="email" type="email" class="form-control" th:name="email" required/>
+                                            <div class="alert alert-danger mt-1" th:if="${error == 'email'}">
+                                                ⚠ Email đã tồn tại.
+                                            </div>
+                                        </div>
+
+                                        <!-- Mật khẩu -->
+                                        <div class="mb-2">
+                                            <label for="password">Mật khẩu</label>
+                                            <input id="password" type="password" class="form-control" th:name="password" required/>
+                                        </div>
+
+                                        <!-- Vai trò -->
+                                        <div class="mb-2">
+                                            <label for="role">Vai trò</label>
+                                            <select id="role" class="form-select" th:name="role.roleId" required>
+                                                <option value="" disabled selected>-- Chọn vai trò --</option>
+                                                <option th:each="r : ${roles}" th:value="${r.roleId}" th:text="${r.roleName}"></option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="mb-2">
-                                    <label for="password">Mật khẩu</label>
-                                    <input id="password" type="password" class="form-control" name="password" required/>
-                                </div>
-
-                                <div class="mb-2">
-                                    <label for="roleSelect">Vai trò</label>
-                                    <select id="roleSelect" class="form-select" name="role.roleId" required>
-                                        <option value="" disabled selected>-- Chọn vai trò --</option>
-                                        <option th:each="r : ${roles}" th:value="${r.roleId}"
-                                                th:text="${r.roleName}"></option>
-                                    </select>
-                                </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Tạo</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    </div>
+                                </form>
                             </div>
+                        </div>
 
-                            <!-- Footer -->
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-success">Tạo</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                            </div>
 
-                        </form>
                     </div>
-                </div>
-            </div>
         </div>
     </div>
+        </div>
+    </div>
+</div>
+
     <script th:if="${viewUser != null}">
         document.addEventListener("DOMContentLoaded", function () {
             new bootstrap.Modal(document.getElementById('viewUserModal')).show();

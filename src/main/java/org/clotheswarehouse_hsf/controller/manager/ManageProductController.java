@@ -29,7 +29,6 @@ public class ManageProductController {
 
     @Autowired
     private ProductService productService;
-
     @Autowired
     private CategoryService categoryService;
     @Autowired
