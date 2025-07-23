@@ -1,6 +1,7 @@
 # Warehouse Management System - ClothesWareHouse_HSF
 
 A web-based Warehouse Management System built with Spring Boot, using Thymeleaf for front-end rendering and MySQL for database management.
+
 link video : https://www.youtube.com/watch?v=bwRBrn2W2p8&ab_channel=B%C3%B9iQuangHi%E1%BB%87p
 ## 📦 Features
 
