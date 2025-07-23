@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: mystrongpassword
+      MYSQL_DATABASE: spring_warehouse
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - spring-net
+
+volumes:
+  mysql_data:
+
+networks:
+  spring-net:
